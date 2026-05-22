@@ -10,3 +10,15 @@ export const supabase = url && anonKey
   : null
 
 export const isSupabaseReady = () => supabase !== null
+
+// Verifica che lo schema iniziale sia applicato leggendo i tipi pensione (seed).
+// Ritorna { ok: true, count } se la query va a buon fine,
+// altrimenti { ok: false, error: string }.
+export async function pingSchema() {
+  if (!supabase) return { ok: false, error: 'Client non configurato' }
+  const { count, error } = await supabase
+    .from('tipi_pensione')
+    .select('*', { count: 'exact', head: true })
+  if (error) return { ok: false, error: error.message }
+  return { ok: true, count: count ?? 0 }
+}
